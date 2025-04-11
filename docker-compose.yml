@@ -1,0 +1,56 @@
+version: "3.0"
+
+services:
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: "fastapi-docker:0.0.1"
+        container_name: fastapi-docker
+        restart: "always"
+        volumes:
+            - ./fastapi:/fastapi
+        environment:
+            - POSTGRES_SERVER=${db_host}
+            - POSTGRES_PORT=${db_port}
+            - POSTGRES_DB=${db_name}
+            - POSTGRES_USER=${master_username}
+            - POSTGRES_PASSWORD=${master_password}
+        expose:
+            - "8080"
+            - "5678"
+        ports:
+            - "8080:8080"
+            - "5678:5678"
+        command: python3 -Xfrozen_modules=off -m debugpy --listen 0.0.0.0:5678 -m uvicorn main:app --reload --host 0.0.0.0 --port 8080
+
+    nextjs:
+        build:
+            context: .
+            dockerfile: web.Dockerfile
+        restart: "always"
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./web:/web:cached
+            - node_modules:/web/node_modules
+        command: npm run dev
+
+    db:
+        image: postgres:13.6
+        container_name: fastapi-docker-db
+        hostname: ${db_host}
+        ports:
+            - "5432:5432"
+        volumes:
+            - db-store:/var/lib/postgresql/data
+            - ./scripts/sql:/docker-entrypoint-initdb.d
+        environment:
+            - POSTGRES_USER=${master_username}
+            - POSTGRES_PASSWORD=${master_password}
+            - POSTGRES_DB=${db_name}
+        restart: always
+
+volumes:
+    db-store:
+    node_modules:
