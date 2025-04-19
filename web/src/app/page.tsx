@@ -3,7 +3,7 @@
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import Link from "next/link";
 
-export const Home = () => {
+export default function Home() {
     return (
         <Stack height="100lvh" justifyContent="center" alignItems="center" gap="32px">
             <Typography id="login_heading" variant="h1" fontSize="1.5rem" className="login-title">
@@ -49,6 +49,4 @@ export const Home = () => {
             `}</style>
         </Stack>
     );
-};
-
-export default Home;
+}

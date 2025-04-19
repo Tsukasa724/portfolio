@@ -17,7 +17,7 @@ const runValidationAll = (value: string, ruleList: ((v: string) => true | string
     return ruleList.map((rule) => rule(value)).filter((res): res is string => res !== true);
 };
 
-export const AccountPage = () => {
+export default function AccountPage() {
     // State状態管理
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -151,6 +151,4 @@ export const AccountPage = () => {
             `}</style>
         </Stack>
     );
-};
-
-export default AccountPage;
+}
