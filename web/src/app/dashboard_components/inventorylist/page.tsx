@@ -4,6 +4,7 @@ import * as React from "react";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Stack } from "@mui/material";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Link from "next/link";
 
 interface Column {
     id: "name" | "stock" | "threshold" | "status";
@@ -91,7 +92,11 @@ export default function StickyHeadTable() {
     return (
         <Stack>
             <div className="create-button">
-                <Button variant="outlined">新規作成</Button>
+                <Link href="/stock_create" passHref>
+                    <Button variant="outlined" component="a">
+                        新規作成
+                    </Button>
+                </Link>
             </div>
             <Paper sx={{ width: "100%", overflow: "hidden" }}>
                 <TableContainer sx={{ maxHeight: 440 }}>
@@ -148,8 +153,8 @@ export default function StickyHeadTable() {
                 </TableContainer>
                 <TablePagination rowsPerPageOptions={[10, 25, 100]} component="div" count={rows.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} onRowsPerPageChange={handleChangeRowsPerPage} />
             </Paper>
-            {/*スタイル（CSS in JSX）*/}
 
+            {/*スタイル（CSS in JSX）*/}
             <style jsx>{`
                 .create-button {
                     margin-bottom: 16px;
