@@ -17,7 +17,7 @@ const runValidationAll = (value: string, ruleList: ((v: string) => true | string
     return ruleList.map((rule) => rule(value)).filter((res): res is string => res !== true);
 };
 
-export default function CreatePage() {
+export default function EditPage() {
     // State状態管理
     const [name, setName] = useState("");
     const [threshold, setThreshold] = useState("");
@@ -51,17 +51,17 @@ export default function CreatePage() {
 
     return (
         <Stack height="100lvh" justifyContent="center" alignItems="center" gap="32px">
-            <Typography id="login_heading" variant="h1" fontSize="1.5rem" className="create-title">
-                在庫新規登録
+            <Typography id="login_heading" variant="h1" fontSize="1.5rem" className="edit-title">
+                在庫編集
             </Typography>
-            <Stack component="form" onSubmit={handleSubmit} width={560} gap="24px" aria-labelledby="login_heading" className="create-form">
-                {/* 名前入力 */}
+            <Stack component="form" onSubmit={handleSubmit} width={560} gap="24px" aria-labelledby="login_heading" className="edit-form">
+                {/* 名前編集 */}
                 <Stack spacing={0.5}>
                     <Typography variant="subtitle2" color="text.secondary">
                         ・必須項目 ・先頭に空白は不可
                     </Typography>
                     <TextField
-                        label="名前"
+                        label="現在の在庫物"
                         value={name}
                         onChange={(e) => {
                             const value = e.target.value;
@@ -75,13 +75,13 @@ export default function CreatePage() {
                     />
                 </Stack>
 
-                {/* 閾値入力 */}
+                {/* 閾値編集 */}
                 <Stack spacing={0.5}>
                     <Typography variant="subtitle2" color="text.secondary">
                         ・必須項目 ・先頭に空白は不可 ・全角文字は不可 ・数字のみ入力可
                     </Typography>
                     <TextField
-                        label="閾値"
+                        label="現在の閾値"
                         value={threshold}
                         onChange={(e) => {
                             const value = e.target.value;
@@ -95,24 +95,24 @@ export default function CreatePage() {
                     />
                 </Stack>
 
-                <Button variant="contained" className="create-button" type="submit">
-                    登録
+                <Button variant="contained" className="edit-button" type="submit">
+                    編集
                 </Button>
             </Stack>
 
             {/*スタイル（CSS in JSX）*/}
             <style jsx>{`
-                .create-title {
+                .edit-title {
                     color: #ff3b3b;
                 }
 
-                .create-form {
+                .edit-form {
                     background: #f9f9f9;
                     padding: 32px;
                     border-radius: 16px;
                 }
 
-                .create-button {
+                .edit-button {
                     background-color: #1976d2;
                     color: white;
                     font-weight: bold;

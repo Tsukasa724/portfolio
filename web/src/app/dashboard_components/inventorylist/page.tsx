@@ -108,6 +108,8 @@ export default function StickyHeadTable() {
                                         {column.label}
                                     </TableCell>
                                 ))}
+                                {/* 編集ボタンの列用の空白見出し */}
+                                <TableCell align="right"></TableCell>
                                 {/* 削除ボタンの列用の空白見出し */}
                                 <TableCell align="right"></TableCell>
                             </TableRow>
@@ -124,6 +126,26 @@ export default function StickyHeadTable() {
                                                 </TableCell>
                                             );
                                         })}
+                                        {/* 編集ボタン用のセルを追加 */}
+                                        <TableCell align="right">
+                                            <Link href="/stock_edit" passHref>
+                                                <Button
+                                                    variant="outlined"
+                                                    sx={{
+                                                        minWidth: 80,
+                                                        padding: "4px 8px",
+                                                        whiteSpace: "nowrap",
+                                                        fontSize: {
+                                                            xs: "0.7rem", // スマホサイズ
+                                                            sm: "0.8rem", // タブレットサイズ
+                                                            md: "0.9rem", // 通常サイズ
+                                                        },
+                                                    }}
+                                                >
+                                                    編集
+                                                </Button>
+                                            </Link>
+                                        </TableCell>
                                         {/* 削除ボタン用のセルを追加 */}
                                         <TableCell align="right">
                                             <Button
