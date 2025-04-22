@@ -21,7 +21,8 @@ export default function EditPage() {
     // State状態管理
     const [name, setName] = useState("");
     const [threshold, setThreshold] = useState("");
-    const [errors, setErrors] = useState<{ name?: string[]; threshold?: string[] }>({});
+    const [stock, setStock] = useState("");
+    const [errors, setErrors] = useState<{ name?: string[]; threshold?: string[]; stock?: string[] }>({});
 
     // 入力値に対してルールを実行し、エラーを保存
     const validateName = (value: string) => {
@@ -33,18 +34,25 @@ export default function EditPage() {
         setErrors((prev) => ({ ...prev, threshold: thresholdErrors }));
     };
 
+    const validateStock = (value: string) => {
+        const stockErrors = runValidationAll(value, [rules.required, rules.noLeadingSpace, rules.noFullWidthCharacters, rules.numericOnly]);
+        setErrors((prev) => ({ ...prev, stock: stockErrors }));
+    };
+
     // 入力フォームを送信したときの動作を定義
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const nameErrors = runValidationAll(name, [rules.required, rules.noLeadingSpace, rules.noFullWidthCharacters]);
         const thresholdErrors = runValidationAll(threshold, [rules.required, rules.noLeadingSpace, rules.noFullWidthCharacters, rules.numericOnly]);
+        const stockErrors = runValidationAll(stock, [rules.required, rules.noLeadingSpace, rules.noFullWidthCharacters, rules.numericOnly]);
         setErrors({
             name: nameErrors,
             threshold: thresholdErrors,
+            stock: stockErrors,
         });
 
         // すべてのバリデーションに合格したときだけアラートする
-        if (nameErrors.length === 0 && thresholdErrors.length === 0) {
+        if (nameErrors.length === 0 && thresholdErrors.length === 0 && stockErrors.length === 0) {
             alert("バリデーション成功！");
         }
     };
@@ -90,6 +98,26 @@ export default function EditPage() {
                         }}
                         error={Boolean(errors.threshold?.length)}
                         helperText={errors.threshold?.map((err, i) => (
+                            <div key={i}>{err}</div>
+                        ))}
+                    />
+                </Stack>
+
+                {/* 現在の在庫数編集 */}
+                <Stack spacing={0.5}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                        ・必須項目 ・先頭に空白は不可 ・全角文字は不可 ・数字のみ入力可
+                    </Typography>
+                    <TextField
+                        label="現在の在庫数"
+                        value={stock}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setStock(value);
+                            validateStock(value);
+                        }}
+                        error={Boolean(errors.stock?.length)}
+                        helperText={errors.stock?.map((err, i) => (
                             <div key={i}>{err}</div>
                         ))}
                     />
