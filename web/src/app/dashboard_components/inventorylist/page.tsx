@@ -39,13 +39,6 @@ const columns: readonly Column[] = [
     },
 ];
 
-interface Data {
-    name: string;
-    stock: number;
-    threshold: number;
-    status: string;
-}
-
 // データ作成用の関数
 function createData(name: string, stock: number, threshold: number, status: string) {
     return { name, stock, threshold, status };
