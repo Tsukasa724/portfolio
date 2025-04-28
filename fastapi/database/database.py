@@ -1,5 +1,4 @@
 import logging
-
 from core.config import settings
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -20,9 +19,10 @@ def get_db():
     try:
         yield db
         db.commit()
-    except:
+    except Exception as e:
         if db:
             db.rollback()
+        raise e
     finally:
         if db:
             db.close()

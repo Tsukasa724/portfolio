@@ -55,7 +55,7 @@ $$;
 -- Table: public.account
 create table public.account (
     id uuid default gen_random_uuid() not null,
-    username TEXT not null,
+    email TEXT not null,
     password_hash TEXT not null,
     role TEXT not null,
     created_at timestamp with time zone default CURRENT_TIMESTAMP not null,
@@ -64,7 +64,7 @@ create table public.account (
 );
 
 alter table only public.account add constraint account_pkey primary key (id);
-alter table only public.account add constraint account_username_key unique (username);
+alter table only public.account add constraint account_email_key unique (email);
 
 create trigger refresh_account_updated_at_step1
     before update

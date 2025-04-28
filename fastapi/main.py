@@ -2,7 +2,8 @@ from core import config
 from fastapi import Body, FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response, StreamingResponse
-from routers import sample, signup, user
+from routers import account
+from routers import signup
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -22,6 +23,5 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"detail": exc.errors(), "body": exc.body},
     )
 
-app.include_router(sample.router)
 app.include_router(signup.router)
-app.include_router(user.router)
+#app.include_router(account.router)

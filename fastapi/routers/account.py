@@ -1,13 +1,11 @@
 import core.errors as errors
 import cruds.account as crud_account
-import cruds.user as crud_user
-import schemas.user as schemas_user
 from database.database import get_db
 from fastapi import APIRouter, Depends, Query
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-
+"""
 router = APIRouter(
     prefix="/user",
     tags=["ユーザー情報"]
@@ -52,3 +50,4 @@ async def get_user(
     user = crud_user.get_user_by_id(db, user_id)
 
     return user
+    """

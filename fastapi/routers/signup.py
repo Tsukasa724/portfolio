@@ -12,22 +12,20 @@ router = APIRouter(
 )
 
 
-class QueryParams(BaseModel):
-    email: str = Field(Query(default=None, description='メールアドレス'))
-
-
 @router.post(
     "/",
     summary="アカウント情報登録",
-    response_description="アカウント情報登録する。",
-    response_model = schemas_account.AccountBase,
+    response_description="新規アカウント情報登録する",
+    response_model = schemas_account.CreateAccount,
     response_model_exclude_none=True,
     responses=errors.error_response([errors.NotFound, errors.InvalidParameter, errors.InternalServerError])
 )
 async def create_account(
-        account: schemas_account.CreateAccount,
+        email: str,
+        password_hash: str,
+        role: str,
         db: Session = Depends(get_db)
     ):
-    account = crud_account.create_account(db, account.email)
+    account = crud_account.create_account(db, email, password_hash, role)
 
     return account

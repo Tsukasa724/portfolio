@@ -1,12 +1,12 @@
 from typing import List
 from uuid import UUID
-
 import core.errors as errors
 from database.database import SessionLocal
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from models.account import Account
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 
 
 def get_account_by_id(db: Session, account_id: str):
@@ -18,10 +18,15 @@ def get_account_by_id(db: Session, account_id: str):
         print(e)
         raise errors.InternalServerError('アカウント情報取得に失敗しました。', e)
 
+# パスワードをハッシュ化
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def create_account(db: Session, email: str):
+def create_account(db: Session, email: str, password_hash: str, role: str):
+    hashed = pwd_context.hash(password_hash)
     _account = Account(
-            email=email
+            email=email,
+            password_hash=hashed,
+            role=role
         )
     db.add(_account)
     db.commit()

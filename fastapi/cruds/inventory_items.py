@@ -1,14 +1,12 @@
 from typing import List
 from uuid import UUID
-
 import core.errors as errors
 from database.database import SessionLocal
 from models.account import Account
-from models.user import User
+from fastapi.models.inventory_items import InventoryItem
 from sqlalchemy.orm import Session, joinedload
 
-
-def get_multi(db: Session, skip: int = 0, limit: int = 10) -> List[User]:
+"""def get_multi(db: Session, skip: int = 0, limit: int = 10) -> List[User]:
     try:
         # 全件の件数取得
         total_count = db.query(User).join(Account).filter(Account.is_deleted != True).count()
@@ -39,3 +37,4 @@ def get_user_by_id(db: Session, user_id: int):
     except Exception as e:
         print(e)
         raise errors.InternalServerError('ユーザー情報取得に失敗しました。', e)
+"""
