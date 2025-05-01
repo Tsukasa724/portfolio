@@ -8,6 +8,7 @@ psycopg2==2.9.9
 SQLAlchemy==2.0.35
 SQLAlchemy-Utils==0.41.2
 passlib[bcrypt]==1.7.4
+python-jose
 
 # --- 開発補助ツール ---
 flake8==7.0.0         # コードチェック（PEP8準拠）

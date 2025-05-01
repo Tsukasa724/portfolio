@@ -14,3 +14,7 @@ class CreateAccount(BaseModel):
     password_hash: str = Field(..., alias='password_hash', description='パスワード', example='strongpassword123')
     role: str = Field(..., alias='role', description='ユーザーロール', example='user')
 
+
+class AccessToken(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

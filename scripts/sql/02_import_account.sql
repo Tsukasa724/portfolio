@@ -3,7 +3,7 @@ INSERT INTO
 VALUES
     (
         '4f9265b7-d47f-4201-a950-a3c4c280d707',
-        'sample@example.com',
+        'sample1@example.com',
         'test1',
         '管理者'
     );

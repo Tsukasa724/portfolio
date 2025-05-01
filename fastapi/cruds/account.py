@@ -1,6 +1,6 @@
+import core.errors as errors
 from typing import List
 from uuid import UUID
-import core.errors as errors
 from database.database import SessionLocal
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer

@@ -4,6 +4,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from routers import account
 from routers import signup
+from routers import signin
+from routers import dashboard
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -24,4 +26,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 app.include_router(signup.router)
+app.include_router(signin.router)
+app.include_router(dashboard.router)
 #app.include_router(account.router)

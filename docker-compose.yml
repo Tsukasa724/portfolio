@@ -10,6 +10,8 @@ services:
         restart: "always"
         volumes:
             - ./fastapi:/fastapi
+        env_file:
+            - .env
         environment:
             - POSTGRES_SERVER=${db_host}
             - POSTGRES_PORT=${db_port}
