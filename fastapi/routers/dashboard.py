@@ -1,10 +1,11 @@
 import core.errors as errors
 import schemas.inventory_items as schemas_inventory_itemBase
 import cruds.inventory_items as crud_inventory_items
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from database.database import get_db
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel, Field
 
 router = APIRouter(
     prefix="/dashboard",
@@ -14,9 +15,12 @@ router = APIRouter(
 # OAuth 2.0 認証を実装
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="signin")
 
+class ListQueryBase(BaseModel):
+    offset: int = Field(Query(0, description='開始位置'))
+    limit: int = Field(Query(500, ge=0, le=1000, description='取得件数'))
 
 @router.post(
-    "/",
+    "/create_items",
     summary="在庫管理物登録",
     response_description="在庫で管理している購入品等の新規登録",
     response_model = schemas_inventory_itemBase.InventoryItemBase,
@@ -33,5 +37,25 @@ async def create_items(
     ):
 
     new_item = crud_inventory_items.create_items(db, item_name, item_stock, order_threshold)
+
+    return new_item
+
+
+@router.get(
+    "/read_item_list",
+    summary="在庫一覧",
+    response_description="在庫管理物をDBから取得",
+    response_model = schemas_inventory_itemBase.InventoryItemList,
+    response_model_exclude_none=True,
+    responses=errors.error_response([errors.NotFound, errors.InvalidParameter, errors.InternalServerError])
+)
+
+async def get_item_list(
+    token: str = Depends(oauth2_scheme),
+    query: ListQueryBase = Depends(),
+    db: Session = Depends(get_db)
+    ):
+
+    new_item = crud_inventory_items.get_item_list(db, skip=query.offset, limit=query.limit)
 
     return new_item
