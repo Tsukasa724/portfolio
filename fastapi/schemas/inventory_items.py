@@ -19,3 +19,13 @@ class InventoryItem(BaseModel):
 
 class InventoryItemList(ListBase):
     data: list[InventoryItem] = Field(None, alias='data', description='在庫管理物リスト')
+
+class UseItemRequest(BaseModel):
+    item_name: str = Field(..., alias='item_name', description='商品名', example='サンプル商品')
+    item_stock: int = Field(..., alias='item_stock', description='使用数', example=5)
+
+class UsedItemResult(BaseModel):
+    item_name: str = Field(..., alias='item_name', description='商品名', example='サンプル商品')
+    item_stock: Optional[int] = Field(None, alias='item_stock', description='在庫数（成功時）', example=45)
+    success: bool = Field(..., alias='success', description='処理成功フラグ', example=True)
+    message: Optional[str] = Field(None, alias='message', description='エラーメッセージ（失敗時）', example='Item not found')

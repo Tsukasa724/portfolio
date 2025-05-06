@@ -6,6 +6,7 @@ from database.database import get_db
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel, Field
+from typing import List
 
 router = APIRouter(
     prefix="/dashboard",
@@ -59,3 +60,20 @@ async def get_item_list(
     new_item = crud_inventory_items.get_item_list(db, skip=query.offset, limit=query.limit)
 
     return new_item
+
+
+@router.put(
+    "/use_items",
+    summary="複数在庫品の使用",
+    response_description="複数の在庫管理物の在庫数を減少させる",
+    response_model=List[schemas_inventory_itemBase.UsedItemResult],
+    response_model_exclude_none=True,
+    responses=errors.error_response([errors.NotFound, errors.InvalidParameter, errors.InternalServerError])
+)
+
+async def use_items(
+    items: List[schemas_inventory_itemBase.UseItemRequest],
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+    return crud_inventory_items.use_items(db, items)

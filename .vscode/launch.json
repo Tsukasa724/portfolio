@@ -9,8 +9,8 @@
             "host": "localhost",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/api",
-                    "remoteRoot": "/api"
+                    "localRoot": "${workspaceFolder}/fastapi",
+                    "remoteRoot": "/fastapi"
                 }
             ]
         }
