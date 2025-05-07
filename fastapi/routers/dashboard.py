@@ -77,3 +77,20 @@ async def use_items(
     db: Session = Depends(get_db)
 ):
     return crud_inventory_items.use_items(db, items)
+
+
+@router.put(
+    "/add_items",
+    summary="複数在庫品の追加",
+    response_description="複数の在庫管理物の在庫数を増加させる",
+    response_model=List[schemas_inventory_itemBase.AddItemResult],
+    response_model_exclude_none=True,
+    responses=errors.error_response([errors.NotFound, errors.InvalidParameter, errors.InternalServerError])
+)
+
+async def use_items(
+    items: List[schemas_inventory_itemBase.AddItemRequest],
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+    return crud_inventory_items.add_items(db, items)

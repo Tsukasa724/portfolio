@@ -5,7 +5,7 @@ from database.database import SessionLocal
 from models.inventory_items import InventoryItem
 from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException
-from schemas.inventory_items import UseItemRequest, UsedItemResult
+from schemas.inventory_items import UseItemRequest, UsedItemResult, AddItemRequest, AddItemResult
 
 def create_items(db: Session, item_name: str, item_stock: int, order_threshold: int):
 
@@ -74,6 +74,44 @@ def use_items(db: Session, items: List[UseItemRequest]) -> List[UsedItemResult]:
         except Exception as e:
             db.rollback()
             results.append(UsedItemResult(
+                item_name=item.item_name,
+                item_stock=None,
+                success=False,
+                message=f"Unexpected error: {str(e)}"
+            ))
+
+    db.commit()
+    return results
+
+def add_items(db: Session, items: List[AddItemRequest]) -> List[AddItemResult]:
+    results = []
+
+    for item in items:
+        try:
+            db_item = db.query(InventoryItem).filter(InventoryItem.item_name == item.item_name).first()
+
+            if db_item is None:
+                results.append(AddItemResult(
+                    item_name=item.item_name,
+                    item_stock=None,
+                    success=False,
+                    message="Item not found"
+                ))
+                continue
+
+            db_item.item_stock += item.item_stock
+            db.add(db_item)
+            db.flush()
+
+            results.append(AddItemResult(
+                item_name=db_item.item_name,
+                item_stock=db_item.item_stock,
+                success=True
+            ))
+
+        except Exception as e:
+            db.rollback()
+            results.append(AddItemResult(
                 item_name=item.item_name,
                 item_stock=None,
                 success=False,
