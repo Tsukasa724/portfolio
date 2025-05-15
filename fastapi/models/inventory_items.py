@@ -1,9 +1,10 @@
 from datetime import datetime
 from database.database import Base
+from models.order_history import OrderHistory
+from models.out_of_stock_items import OutOfStockItem
 from sqlalchemy import Boolean, Column, DateTime, Integer, SmallInteger, String
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-
 
 
 class InventoryItem(Base):
@@ -18,4 +19,5 @@ class InventoryItem(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     is_deleted = Column(Boolean, default=False, nullable=False)
 
-order_history = relationship("OrderHistory", back_populates="inventory_items", uselist=False)
+    order_history = relationship("OrderHistory", back_populates="inventory_item", uselist=False)
+    out_of_stock_item = relationship("OutOfStockItem", back_populates="inventory_item", uselist=False, cascade="all, delete")

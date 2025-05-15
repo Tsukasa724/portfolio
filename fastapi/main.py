@@ -7,6 +7,7 @@ from routers import signup
 from routers import signin
 from routers import dashboard
 from starlette.middleware.cors import CORSMiddleware
+from core.errors import BaseError
 
 app = FastAPI()
 
@@ -23,6 +24,13 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": exc.errors(), "body": exc.body},
+    )
+
+@app.exception_handler(BaseError)
+async def base_error_handler(request: Request, exc: BaseError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"message": exc.message}
     )
 
 app.include_router(signup.router)
