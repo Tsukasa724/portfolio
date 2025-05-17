@@ -21,6 +21,7 @@ def create_items(db: Session, item_name: str, item_stock: int, order_threshold: 
     return new_item
 
 def get_item_list(db: Session, skip: int = 0, limit: int = 10) -> List[InventoryItem]:
+
     total_count = db.query(InventoryItem).count()
     all_data = db.query(InventoryItem).offset(skip).limit(limit).all()
 
@@ -36,7 +37,51 @@ def get_item_list(db: Session, skip: int = 0, limit: int = 10) -> List[Inventory
 
     return response
 
+def get_item_show(db: Session, id: int):
+
+    item_show = db.query(InventoryItem).filter(InventoryItem.id == id).first()
+
+    if item_show == None:
+        raise HTTPException(status_code=404, detail=f"{id} の在庫管理物が見つかりませんでした")
+
+    return item_show
+
+def edit_item(db: Session, id: int, item_name: str, item_stock: int, order_threshold: int):
+
+    edit_item = db.query(InventoryItem).filter(InventoryItem.id == id).first()
+
+    if edit_item == None:
+        raise HTTPException(status_code=404, detail=f"{id} の在庫管理物が見つかりませんでした")
+
+    edit_item.item_name = item_name
+    edit_item.item_stock = item_stock
+    edit_item.order_threshold = order_threshold
+
+    db.commit()
+    db.refresh(edit_item)
+
+    return edit_item
+
+def delete_item(db: Session, id: int):
+
+    try:
+        delete_item = db.query(InventoryItem).filter(InventoryItem.id == id).first()
+
+        if delete_item == None:
+            raise HTTPException(status_code=404, detail=f"{id} の在庫管理物が見つかりませんでした")
+
+        db.delete(delete_item)
+        db.commit()
+
+    except errors.NotFound as e:
+        raise e
+
+    except Exception as e:
+        print(e)
+        raise errors.InternalServerError('在庫不足物の削除に失敗しました。', e)
+
 def use_items(db: Session, items: List[UseItemRequest]) -> List[UsedItemResult]:
+
     results = []
 
     for item in items:
@@ -84,6 +129,7 @@ def use_items(db: Session, items: List[UseItemRequest]) -> List[UsedItemResult]:
     return results
 
 def add_items(db: Session, items: List[AddItemRequest]) -> List[AddItemResult]:
+
     results = []
 
     for item in items:

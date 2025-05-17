@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException
 
 def get_stock_items_list(db: Session, skip: int = 0, limit: int = 10) -> List[OutOfStockItem]:
+
     total_count = db.query(OutOfStockItem).count()
     all_data = db.query(OutOfStockItem).offset(skip).limit(limit).all()
 
@@ -25,6 +26,7 @@ def get_stock_items_list(db: Session, skip: int = 0, limit: int = 10) -> List[Ou
     return response
 
 def edit_stock_items(db: Session, id: int, status: str):
+
     try:
         stock_item = db.query(OutOfStockItem).filter(OutOfStockItem.id == id).first()
 
@@ -43,6 +45,7 @@ def edit_stock_items(db: Session, id: int, status: str):
 
 
 def get_order_history_list(db: Session, skip: int = 0, limit: int = 10) -> List[OrderHistory]:
+
     total_count = db.query(OrderHistory).count()
     all_data = db.query(OrderHistory).offset(skip).limit(limit).all()
 
@@ -59,6 +62,7 @@ def get_order_history_list(db: Session, skip: int = 0, limit: int = 10) -> List[
     return response
 
 def get_order_status_list(db: Session, skip: int = 0, limit: int = 10) -> List[OrderStatus]:
+
     total_count = db.query(OrderStatus).count()
     all_data = db.query(OrderStatus).offset(skip).limit(limit).all()
 

@@ -66,6 +66,76 @@ async def get_item_list(
     return new_item
 
 
+@router.get(
+    "/read_item_show",
+    summary="在庫管理物詳細",
+    response_description="在庫管理物の詳細情報を取得",
+    response_model = schemas_inventory_itemBase.ShowInventoryItem,
+    response_model_exclude_none=True,
+    responses=errors.error_response([errors.NotFound, errors.InvalidParameter, errors.InternalServerError])
+)
+
+async def get_item_show(
+    id: int,
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+    ):
+
+    show_item = crud_inventory_items.get_item_show(db, id)
+
+    return show_item
+
+
+@router.put(
+    "/edit_item",
+    summary="在庫管理物編集",
+    response_description="在庫管理物の詳細情報を編集する",
+    response_model = schemas_inventory_itemBase.ShowInventoryItem,
+    response_model_exclude_none=True,
+    responses=errors.error_response([errors.NotFound, errors.InvalidParameter, errors.InternalServerError])
+)
+
+async def edit_item(
+    id: int,
+    item_name: str,
+    item_stock: int,
+    order_threshold: int,
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+    ):
+
+    edit_item = crud_inventory_items.edit_item(db, id, item_name, item_stock, order_threshold)
+
+    return edit_item
+
+
+@router.delete(
+    "/delete_item",
+    summary="在庫管理物削除",
+    response_description="在庫管理物をDBから完全削除する",
+    response_model=dict,
+    response_model_exclude_none=True,
+    responses=errors.error_response([errors.NotFound, errors.InvalidParameter, errors.InternalServerError])
+)
+
+async def delete_item(
+    id: int,
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+    ):
+
+    try:
+        delete_item = crud_inventory_items.delete_item(db, id)
+        return {"message": "処理完了"}
+
+    except errors.NotFound as e:
+        raise e
+
+    except Exception as e:
+        print(e)
+        raise errors.InternalServerError('在庫不足物の削除に失敗しました。', e)
+
+
 @router.put(
     "/use_items",
     summary="複数在庫品の使用",

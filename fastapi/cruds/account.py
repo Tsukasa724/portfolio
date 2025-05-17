@@ -10,6 +10,7 @@ from passlib.context import CryptContext
 
 
 def get_account_by_id(db: Session, account_id: str):
+
     try:
         account = db.query(Account).filter(Account.id == account_id).first()
         return account
@@ -22,6 +23,7 @@ def get_account_by_id(db: Session, account_id: str):
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_account(db: Session, email: str, password_hash: str, role: str):
+
     hashed = pwd_context.hash(password_hash)
     _account = Account(
             email=email,
@@ -37,6 +39,7 @@ def create_account(db: Session, email: str, password_hash: str, role: str):
 
 # トークン解析
 def check_token(headers: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
+
     token = headers.credentials
 
     if token is None:
