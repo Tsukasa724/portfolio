@@ -81,8 +81,8 @@ returns trigger
 language plpgsql
 as $$
 begin
-    -- "発注" または "取消" に変更された場合にレコードを削除
-    if (NEW.order_status = '発注' or NEW.order_status = '取消') then
+    -- "発注完了" または "取消" に変更された場合にレコードを削除
+    if (NEW.order_status = '発注完了' or NEW.order_status = '取消') then
         delete from public.out_of_stock_items where id = NEW.id;
     end if;
 
@@ -98,8 +98,8 @@ as $$
 declare
     new_history_id smallint;
 begin
-    -- "発注待ち"から"発注"に変更された場合
-    if OLD.order_status = '発注待ち' and NEW.order_status = '発注' then
+    -- "発注待ち"から"発注完了"に変更された場合
+    if OLD.order_status = '発注待ち' and NEW.order_status = '発注完了' then
 
         -- order_historyに新しい履歴を追加
         insert into public.order_history (item_id, history_status)

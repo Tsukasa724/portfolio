@@ -24,7 +24,7 @@ const pages = [
 
 // 設定メニュー
 const settings = [
-    { label: "通知設定", component: <NotificationSettingsPage /> },
+    { label: "在庫不足", component: <NotificationSettingsPage /> },
     { label: "ログアウト", component: null },
 ];
 
