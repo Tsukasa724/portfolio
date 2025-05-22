@@ -34,7 +34,7 @@ const columns: readonly Column[] = [
 
 // データ作成用の関数
 function createData(name: string, stock: number, threshold: number) {
-    return { name, stock, threshold, status };
+    return { name, stock, threshold };
 }
 
 // データの配列（行データ）
