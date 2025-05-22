@@ -72,7 +72,7 @@ export default function AccountPage() {
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    alert(`エラーメッセージ: ${JSON.stringify(errorData.detail)}`);
+                    alert(`エラーメッセージ: ${JSON.stringify(errorData.message)}`);
                     return;
                 }
 

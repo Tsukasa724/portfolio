@@ -38,7 +38,7 @@ def signin(db: Session, email: str, password: str):
 
     # accountからハッシュされたパスワードとパラメーターのパスワードを比較してbool値を返すだけ
     if not verify_password(password, account.password_hash):
-        raise errors.AccessDenied
+        raise errors.AccessDenied()
 
     # 問題なかったらアクセストークンを生成して返却
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
