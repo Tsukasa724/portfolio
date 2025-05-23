@@ -7,6 +7,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from models.account import Account
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from core.errors import Conflict
+from sqlalchemy.exc import SQLAlchemyError
 
 
 def get_account_by_id(db: Session, account_id: str):
@@ -23,18 +25,26 @@ def get_account_by_id(db: Session, account_id: str):
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_account(db: Session, email: str, password_hash: str, role: str):
+    # 既に同じメールアドレスが存在していないか確認
+    existing_account = db.query(Account).filter(Account.email == email).first()
+    if existing_account:
+        raise Conflict("このメールアドレスは既に登録されています。")
 
-    hashed = pwd_context.hash(password_hash)
-    _account = Account(
+    try:
+        hashed = pwd_context.hash(password_hash)
+        _account = Account(
             email=email,
             password_hash=hashed,
             role=role
         )
-    db.add(_account)
-    db.commit()
-    db.refresh(_account)
+        db.add(_account)
+        db.commit()
+        db.refresh(_account)
+        return _account
 
-    return _account
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise errors.InternalServerError("アカウントの作成に失敗しました。", e)
 
 
 # トークン解析

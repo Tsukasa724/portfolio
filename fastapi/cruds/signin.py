@@ -43,7 +43,7 @@ def signin(db: Session, email: str, password: str):
     # 問題なかったらアクセストークンを生成して返却
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": email}, expires_delta=access_token_expires
+        data={"sub": email, "role": account.role}, expires_delta=access_token_expires
     )
 
     return access_token

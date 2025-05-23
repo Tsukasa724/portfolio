@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, MenuItem } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import { UserAuth } from "../../../lib/auth";
 
 // ページコンポーネントのインポート
 import InventoryListPage from "../dashboard_components/inventorylist/page";
@@ -32,6 +34,14 @@ export default function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [activeTabComponent, setActiveTabComponent] = useState<React.ReactNode>(pages[0].component);
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        const role = UserAuth.getUserRole();
+        console.log("取得した userRole:", role);
+        setUserRole(role);
+    }, []);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -53,11 +63,18 @@ export default function ResponsiveAppBar() {
 
     const handleSettingClick = (setting: (typeof settings)[0]) => {
         handleCloseUserMenu();
+
         if (setting.component) {
             setActiveTabComponent(setting.component);
         } else if (setting.label === "ログアウト") {
-            // ここにログアウト処理を書く
-            console.log("ログアウト処理を実行");
+            // アクセストークンを削除
+            localStorage.removeItem("access_token");
+
+            // トップページにリダイレクト
+            router.push("/");
+
+            // 必要に応じて、認証状態のリセット処理を入れる
+            console.log("ログアウトしました");
         }
     };
 
@@ -139,14 +156,16 @@ export default function ResponsiveAppBar() {
                         {/* ユーザーメニュー */}
                         <Box sx={{ flexGrow: 0 }}>
                             <Button color="inherit" onClick={handleOpenUserMenu}>
-                                アカウント
+                                {userRole || "アカウント"}
                             </Button>
-                            <Menu anchorEl={anchorElUser} open={Boolean(anchorElUser)} onClose={handleCloseUserMenu} anchorOrigin={{ vertical: "top", horizontal: "right" }} transformOrigin={{ vertical: "top", horizontal: "right" }} sx={{ mt: "45px" }}>
-                                {settings.map((setting) => (
-                                    <MenuItem key={setting.label} onClick={() => handleSettingClick(setting)}>
-                                        <Typography textAlign="center">{setting.label}</Typography>
-                                    </MenuItem>
-                                ))}
+                            <Menu anchorEl={anchorElUser} open={Boolean(anchorElUser)} onClose={handleCloseUserMenu}>
+                                {settings.map((setting) =>
+                                    setting.label === "在庫不足" && userRole !== "manager" ? null : (
+                                        <MenuItem key={setting.label} onClick={() => handleSettingClick(setting)}>
+                                            <Typography textAlign="center">{setting.label}</Typography>
+                                        </MenuItem>
+                                    )
+                                )}
                             </Menu>
                         </Box>
                     </Toolbar>
