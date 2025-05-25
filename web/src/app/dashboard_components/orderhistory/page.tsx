@@ -3,6 +3,10 @@
 import * as React from "react";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Stack } from "@mui/material";
 
+interface OrderHistoryPageProps {
+    userRole: string | null;
+}
+
 interface Column {
     id: "name" | "history" | "orderday";
     label: string;
@@ -53,7 +57,7 @@ const rows = [
     createData("Brazil", "正常", "日時"),
 ];
 
-export default function StickyHeadTable() {
+export default function OrderHistoryPage({ userRole }: OrderHistoryPageProps) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 

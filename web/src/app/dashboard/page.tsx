@@ -17,11 +17,11 @@ import NotificationSettingsPage from "../dashboard_components/notificationsettin
 
 // ページ情報（通知設定は除外）
 const pages = [
-    { label: "在庫一覧", component: <InventoryListPage /> },
-    { label: "発注履歴", component: <OrderHistoryPage /> },
-    { label: "発注ステータス", component: <OrderStatusPage /> },
-    { label: "在庫使用", component: <UseStockPage /> },
-    { label: "在庫追加", component: <AddStockPage /> },
+    { label: "在庫一覧", component: (role: string | null) => <InventoryListPage userRole={role} /> },
+    { label: "発注履歴", component: (role: string | null) => <OrderHistoryPage userRole={role} /> },
+    { label: "発注ステータス", component: (role: string | null) => <OrderStatusPage userRole={role} /> },
+    { label: "在庫使用", component: (role: string | null) => <UseStockPage userRole={role} /> },
+    { label: "在庫追加", component: (role: string | null) => <AddStockPage userRole={role} /> },
 ];
 
 // 設定メニュー
@@ -33,14 +33,17 @@ const settings = [
 export default function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const [activeTabComponent, setActiveTabComponent] = useState<React.ReactNode>(pages[0].component);
     const [userRole, setUserRole] = useState<string | null>(null);
+    const [activeTabComponent, setActiveTabComponent] = useState<React.ReactNode>(pages[0].component(userRole));
     const router = useRouter();
 
     useEffect(() => {
         const role = UserAuth.getUserRole();
         console.log("取得した userRole:", role);
         setUserRole(role);
+        if (role) {
+            setActiveTabComponent(pages[0].component(role));
+        }
     }, []);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -57,7 +60,7 @@ export default function ResponsiveAppBar() {
     };
 
     const handleTabClick = (index: number) => {
-        setActiveTabComponent(pages[index].component);
+        setActiveTabComponent(pages[index].component(userRole));
         handleCloseNavMenu();
     };
 

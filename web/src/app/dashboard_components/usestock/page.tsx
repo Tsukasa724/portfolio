@@ -5,6 +5,10 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
 import Chance from "chance";
 
+interface UseStockPageProps {
+    userRole: string | null;
+}
+
 interface Data {
     id: number;
     name: string;
@@ -52,7 +56,7 @@ const VirtuosoTableComponents: TableComponents<Data> = {
     TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => <TableBody {...props} ref={ref} />),
 };
 
-export default function ReactVirtualizedTable() {
+export default function UseStockPage({ userRole }: UseStockPageProps) {
     const [selected, setSelected] = React.useState<Set<number>>(new Set());
     const [rows, setRows] = React.useState<Data[]>(initialRows);
 
