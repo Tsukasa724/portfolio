@@ -47,3 +47,10 @@ class AddItemResult(BaseModel):
 
 class RelationItemBase(BaseModel):
     item_name: str
+
+class StockItemBase(BaseModel):
+    id: Optional[int] = Field(None, alias='id', description='商品ID', example=1001)
+    item_name: str = Field(..., alias='item_name', description='商品名', example='サンプル商品')
+
+class StockItemList(ListBase):
+    data: list[StockItemBase] = Field(None, alias='data', description='在庫管理物リスト')

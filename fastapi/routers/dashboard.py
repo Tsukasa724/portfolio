@@ -256,3 +256,23 @@ async def get_stock_items_list(
     status_list = crud_order.get_order_status_list(db, skip=query.offset, limit=query.limit)
 
     return status_list
+
+
+@router.get(
+    "/read_stock_list",
+    summary="在庫使用・追加用リスト",
+    response_description="在庫管理物をDBから取得",
+    response_model = schemas_inventory_itemBase.StockItemList,
+    response_model_exclude_none=True,
+    responses=errors.error_response([errors.NotFound, errors.InvalidParameter, errors.InternalServerError])
+)
+
+async def get_item_list(
+    token: str = Depends(oauth2_scheme),
+    query: ListQueryBase = Depends(),
+    db: Session = Depends(get_db)
+    ):
+
+    new_item = crud_inventory_items.get_item_list(db, skip=query.offset, limit=query.limit)
+
+    return new_item

@@ -5,6 +5,10 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
 import Chance from "chance";
 
+// APIエンドポイントのURLを設定
+const API_URL = "http://localhost:8080/dashboard/read_stock_list";
+const API_URL2 = "http://localhost:8080/dashboard/use_items";
+
 interface UseStockPageProps {
     userRole: string | null;
 }
@@ -46,8 +50,6 @@ const columns: ColumnData[] = [
     },
 ];
 
-const initialRows: Data[] = Array.from({ length: 200 }, (_, index) => createData(index));
-
 const VirtuosoTableComponents: TableComponents<Data> = {
     Scroller: React.forwardRef<HTMLDivElement>((props, ref) => <TableContainer component={Paper} {...props} ref={ref} />),
     Table: (props) => <Table {...props} sx={{ borderCollapse: "separate", tableLayout: "fixed" }} />,
@@ -58,7 +60,74 @@ const VirtuosoTableComponents: TableComponents<Data> = {
 
 export default function UseStockPage({ userRole }: UseStockPageProps) {
     const [selected, setSelected] = React.useState<Set<number>>(new Set());
-    const [rows, setRows] = React.useState<Data[]>(initialRows);
+    const [data, setData] = React.useState<any[]>([]);
+
+    // APIからデータ取得
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem("access_token");
+                const response = await fetch(API_URL, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error("データの取得に失敗しました");
+                }
+                const result = await response.json();
+                console.log(result);
+                const formattedData = result.data.map((item: any) => ({
+                    id: item.id,
+                    name: item.item_name,
+                    quantity: 0,
+                }));
+                setData(formattedData);
+            } catch (error) {
+                console.error("API取得エラー:", error);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleUseStock = async () => {
+        const token = localStorage.getItem("access_token");
+
+        // チェック済みのデータだけ抽出
+        const selectedItems = data
+            .filter((item) => selected.has(item.id) && item.quantity > 0)
+            .map((item) => ({
+                item_name: item.name,
+                item_stock: item.quantity,
+            }));
+
+        if (selectedItems.length === 0) {
+            alert("在庫品目を選択し、数量を入力してください。");
+            return;
+        }
+
+        try {
+            const response = await fetch(API_URL2, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(selectedItems),
+            });
+
+            if (!response.ok) {
+                throw new Error("在庫使用に失敗しました");
+            }
+
+            const result = await response.json();
+            console.log("使用結果:", result);
+            alert("在庫使用が完了しました。");
+        } catch (error) {
+            console.error("送信エラー:", error);
+            alert("エラーが発生しました。");
+        }
+    };
 
     const handleCheckboxToggle = (id: number) => {
         setSelected((prev) => {
@@ -69,7 +138,7 @@ export default function UseStockPage({ userRole }: UseStockPageProps) {
     };
 
     const handleQuantityChange = (id: number, value: number) => {
-        setRows((prevRows) => prevRows.map((row) => (row.id === id ? { ...row, quantity: value } : row)));
+        setData((prevRows) => prevRows.map((row) => (row.id === id ? { ...row, quantity: value } : row)));
     };
 
     const fixedHeaderContent = () => (
@@ -117,8 +186,8 @@ export default function UseStockPage({ userRole }: UseStockPageProps) {
             <Typography id="login_heading" variant="h1" fontSize="1.5rem" className="create-title">
                 在庫使用
             </Typography>
-            <TableVirtuoso data={rows} components={VirtuosoTableComponents} fixedHeaderContent={fixedHeaderContent} itemContent={rowContent} />
-            <Button variant="contained" className="use-button" type="submit" fullWidth>
+            <TableVirtuoso data={data} components={VirtuosoTableComponents} fixedHeaderContent={fixedHeaderContent} itemContent={rowContent} />
+            <Button variant="contained" className="use-button" type="submit" fullWidth onClick={handleUseStock}>
                 在庫使用
             </Button>
 
