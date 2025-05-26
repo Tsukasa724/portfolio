@@ -44,3 +44,6 @@ class AddItemResult(BaseModel):
     item_stock: Optional[int] = Field(None, alias='item_stock', description='在庫数（成功時）', example=45)
     success: bool = Field(..., alias='success', description='処理成功フラグ', example=True)
     message: Optional[str] = Field(None, alias='message', description='エラーメッセージ（失敗時）', example='Item not found')
+
+class RelationItemBase(BaseModel):
+    item_name: str

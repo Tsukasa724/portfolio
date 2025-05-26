@@ -47,7 +47,7 @@ def edit_stock_items(db: Session, id: int, status: str):
 def get_order_history_list(db: Session, skip: int = 0, limit: int = 10) -> List[OrderHistory]:
 
     total_count = db.query(OrderHistory).count()
-    all_data = db.query(OrderHistory).offset(skip).limit(limit).all()
+    all_data = (db.query(OrderHistory).options(joinedload(OrderHistory.inventory_item)).offset(skip).limit(limit).all())
 
     if total_count == 0:
         raise HTTPException(status_code=404, detail=f"注文履歴はありませんでした")

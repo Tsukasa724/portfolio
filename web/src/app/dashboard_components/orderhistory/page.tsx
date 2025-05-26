@@ -3,6 +3,9 @@
 import * as React from "react";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Stack } from "@mui/material";
 
+// APIエンドポイントのURLを設定
+const API_URL = "http://localhost:8080/dashboard/read_order_history_list";
+
 interface OrderHistoryPageProps {
     userRole: string | null;
 }
@@ -33,33 +36,38 @@ const columns: readonly Column[] = [
     },
 ];
 
-// データ作成用の関数
-function createData(name: string, history: string, orderday: string) {
-    return { name, history, orderday };
-}
-
-// データの配列（行データ）
-const rows = [
-    createData("India", "正常", "日時"),
-    createData("China", "正常", "日時"),
-    createData("Italy", "正常", "日時"),
-    createData("United States", "正常", "日時"),
-    createData("Canada", "正常", "日時"),
-    createData("Australia", "正常", "日時"),
-    createData("Germany", "正常", "日時"),
-    createData("Ireland", "正常", "日時"),
-    createData("Mexico", "正常", "日時"),
-    createData("Japan", "正常", "日時"),
-    createData("France", "正常", "日時"),
-    createData("United Kingdom", "正常", "日時"),
-    createData("Russia", "正常", "日時"),
-    createData("Nigeria", "正常", "日時"),
-    createData("Brazil", "正常", "日時"),
-];
-
 export default function OrderHistoryPage({ userRole }: OrderHistoryPageProps) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [data, setData] = React.useState<any[]>([]);
+
+    // APIからデータ取得
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem("access_token");
+                const response = await fetch(API_URL, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error("データの取得に失敗しました");
+                }
+                const result = await response.json();
+                console.log(result);
+                const formattedData = result.data.map((item: any) => ({
+                    name: item.inventory_item.item_name,
+                    history: item.history_status,
+                    orderday: item.created_at,
+                }));
+                setData(formattedData);
+            } catch (error) {
+                console.error("API取得エラー:", error);
+            }
+        };
+        fetchData();
+    }, []);
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -85,7 +93,7 @@ export default function OrderHistoryPage({ userRole }: OrderHistoryPageProps) {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                 return (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={row.name}>
                                         {columns.map((column) => {
@@ -102,7 +110,7 @@ export default function OrderHistoryPage({ userRole }: OrderHistoryPageProps) {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <TablePagination rowsPerPageOptions={[10, 25, 100]} component="div" count={rows.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} onRowsPerPageChange={handleChangeRowsPerPage} />
+                <TablePagination rowsPerPageOptions={[10, 25, 100]} component="div" count={data.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} onRowsPerPageChange={handleChangeRowsPerPage} />
             </Paper>
         </Stack>
     );
