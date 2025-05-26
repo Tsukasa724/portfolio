@@ -64,7 +64,7 @@ def get_order_history_list(db: Session, skip: int = 0, limit: int = 10) -> List[
 def get_order_status_list(db: Session, skip: int = 0, limit: int = 10) -> List[OrderStatus]:
 
     total_count = db.query(OrderStatus).count()
-    all_data = db.query(OrderStatus).offset(skip).limit(limit).all()
+    all_data = db.query(OrderStatus).options(joinedload(OrderStatus.order_history)).offset(skip).limit(limit).all()
 
     if total_count == 0:
         raise HTTPException(status_code=404, detail=f"注文ステータスはありませんでした")
