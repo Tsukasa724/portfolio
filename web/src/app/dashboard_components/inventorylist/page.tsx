@@ -8,6 +8,7 @@ import Link from "next/link";
 
 // APIエンドポイントのURLを設定
 const API_URL = "http://localhost:8080/dashboard/read_item_list";
+const getDeleteUrl = (id: number) => `http://localhost:8080/dashboard/delete_item?id=${id}`;
 
 interface InventoryListPageProps {
     userRole: string | null;
@@ -90,9 +91,32 @@ export default function InventoryListPage({ userRole }: InventoryListPageProps) 
         setPage(0);
     };
 
-    const handleDelete = (name: string) => {
-        const newData = data.filter((row) => row.name !== name);
-        setData(newData);
+    const handleDelete = async (id: number) => {
+        if (!window.confirm("この在庫物を削除してもよろしいですか？")) return;
+
+        try {
+            const token = localStorage.getItem("access_token");
+            const response = await fetch(getDeleteUrl(id), {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "削除に失敗しました");
+            }
+
+            // 成功時はローカルデータを更新
+            const newData = data.filter((item) => item.id !== id);
+            setData(newData);
+
+            alert("削除が完了しました");
+        } catch (error) {
+            console.error("削除エラー:", error);
+            alert(`削除に失敗しました: ${error}`);
+        }
     };
 
     return (
@@ -166,7 +190,7 @@ export default function InventoryListPage({ userRole }: InventoryListPageProps) 
                                                         variant="outlined"
                                                         color="error"
                                                         startIcon={<DeleteIcon />}
-                                                        onClick={() => handleDelete(row.name)}
+                                                        onClick={() => handleDelete(row.id)}
                                                         sx={{
                                                             minWidth: 80,
                                                             padding: "4px 8px",
