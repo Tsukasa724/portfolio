@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel, Field
 from typing import List
+from fastapi import Form
 
 router = APIRouter(
     prefix="/dashboard",
@@ -34,9 +35,9 @@ class ListQueryBase(BaseModel):
 )
 
 async def create_items(
-    item_name: str,
-    item_stock: int,
-    order_threshold: int,
+    item_name: str = Form(...),
+    item_stock: int = Form(...),
+    order_threshold: int = Form(...),
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
     ):
