@@ -97,10 +97,10 @@ async def get_item_show(
 )
 
 async def edit_item(
-    id: int,
-    item_name: str,
-    item_stock: int,
-    order_threshold: int,
+    id: int = Form(...),
+    item_name: str = Form(...),
+    item_stock: int = Form(...),
+    order_threshold: int = Form(...),
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
     ):

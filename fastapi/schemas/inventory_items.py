@@ -23,7 +23,7 @@ class ShowInventoryItem(BaseModel):
     order_threshold: int = Field(..., alias='order_threshold', description='発注点', example=10)
 
 class InventoryItemList(ListBase):
-    data: list[InventoryItem] = Field(None, alias='data', description='在庫管理物リスト')
+    data: list[InventoryItemBase] = Field(None, alias='data', description='在庫管理物リスト')
 
 class UseItemRequest(BaseModel):
     item_name: str = Field(..., alias='item_name', description='商品名', example='サンプル商品')

@@ -2,7 +2,13 @@
 
 import * as React from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button, Stack, TextField, Typography } from "@mui/material";
+
+// APIエンドポイントのURLを設定
+const API_URL = "http://localhost:8080/dashboard/read_item_show";
+const API_URL2 = "http://localhost:8080/dashboard/edit_item";
 
 // バリデーションルール
 const rules = {
@@ -18,15 +24,37 @@ const runValidationAll = (value: string, ruleList: ((v: string) => true | string
 };
 
 export default function EditPage() {
+    // リダイレクト管理
+    const router = useRouter();
     // State状態管理
     const [name, setName] = useState("");
     const [threshold, setThreshold] = useState("");
     const [stock, setStock] = useState("");
     const [errors, setErrors] = useState<{ name?: string[]; threshold?: string[]; stock?: string[] }>({});
+    // 親コンポーネントからid情報を取得
+    const searchParams = useSearchParams();
+    const itemId = searchParams.get("id");
+
+    React.useEffect(() => {
+        if (!itemId) return;
+        const fetchItem = async () => {
+            const token = localStorage.getItem("access_token");
+            const response = await fetch(`${API_URL}?id=${itemId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const result = await response.json();
+            setName(result.item_name);
+            setStock(result.item_stock);
+            setThreshold(result.order_threshold);
+        };
+        fetchItem();
+    }, [itemId]);
 
     // 入力値に対してルールを実行し、エラーを保存
     const validateName = (value: string) => {
-        const nameErrors = runValidationAll(value, [rules.required, rules.noLeadingSpace, rules.noFullWidthCharacters]);
+        const nameErrors = runValidationAll(value, [rules.required, rules.noLeadingSpace]);
         setErrors((prev) => ({ ...prev, name: nameErrors }));
     };
     const validateThreshold = (value: string) => {
@@ -40,9 +68,9 @@ export default function EditPage() {
     };
 
     // 入力フォームを送信したときの動作を定義
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const nameErrors = runValidationAll(name, [rules.required, rules.noLeadingSpace, rules.noFullWidthCharacters]);
+        const nameErrors = runValidationAll(name, [rules.required, rules.noLeadingSpace]);
         const thresholdErrors = runValidationAll(threshold, [rules.required, rules.noLeadingSpace, rules.noFullWidthCharacters, rules.numericOnly]);
         const stockErrors = runValidationAll(stock, [rules.required, rules.noLeadingSpace, rules.noFullWidthCharacters, rules.numericOnly]);
         setErrors({
@@ -53,12 +81,45 @@ export default function EditPage() {
 
         // すべてのバリデーションに合格したときだけアラートする
         if (nameErrors.length === 0 && thresholdErrors.length === 0 && stockErrors.length === 0) {
-            alert("バリデーション成功！");
+            try {
+                const token = localStorage.getItem("access_token");
+                const response = await fetch(API_URL2, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: new URLSearchParams({
+                        id: itemId ?? "",
+                        item_name: name,
+                        item_stock: stock,
+                        order_threshold: threshold,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("登録失敗:", errorData);
+                    alert("登録に失敗しました");
+                    return;
+                }
+
+                const data = await response.json();
+                console.log("登録成功:", data);
+                alert("在庫登録に成功しました！");
+                setName("");
+                setStock("");
+                setThreshold("");
+                router.push("/dashboard");
+            } catch (error) {
+                console.error("エラー発生:", error);
+                alert("エラーが発生しました");
+            }
         }
     };
 
     return (
-        <Stack height="100lvh" justifyContent="center" alignItems="center" gap="32px">
+        <Stack height="100vh" justifyContent="center" alignItems="center" gap="32px">
             <Typography id="login_heading" variant="h1" fontSize="1.5rem" className="edit-title">
                 在庫編集
             </Typography>

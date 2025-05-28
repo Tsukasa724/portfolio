@@ -71,6 +71,7 @@ export default function InventoryListPage({ userRole }: InventoryListPageProps) 
                     stock: item.item_stock,
                     threshold: item.order_threshold,
                     status: item.stock_status,
+                    id: item.id,
                 }));
                 setData(formattedData);
             } catch (error) {
@@ -141,7 +142,7 @@ export default function InventoryListPage({ userRole }: InventoryListPageProps) 
                                             <>
                                                 {/* 編集ボタン用のセルを追加 */}
                                                 <TableCell align="right">
-                                                    <Link href="/stock_edit" passHref>
+                                                    <Link href={`/stock_edit?id=${row.id}`} passHref>
                                                         <Button
                                                             variant="outlined"
                                                             sx={{

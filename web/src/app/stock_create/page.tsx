@@ -95,7 +95,7 @@ export default function CreatePage() {
     };
 
     return (
-        <Stack height="100lvh" justifyContent="center" alignItems="center" gap="32px">
+        <Stack height="100vh" justifyContent="center" alignItems="center" gap="32px">
             <Typography id="login_heading" variant="h1" fontSize="1.5rem" className="create-title">
                 在庫新規登録
             </Typography>
