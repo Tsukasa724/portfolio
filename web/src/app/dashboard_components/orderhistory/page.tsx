@@ -99,7 +99,7 @@ export default function OrderHistoryPage({ userRole }: OrderHistoryPageProps) {
                                         {columns.map((column) => {
                                             const value = row[column.id];
                                             return (
-                                                <TableCell key={column.id} align={column.align}>
+                                                <TableCell key={column.id} align={column.align} sx={column.id === "history" ? (value === "発注完了" ? { color: "green", fontWeight: "bold" } : value === "発注取消" ? { color: "red", fontWeight: "bold" } : {}) : {}}>
                                                     {column.format && typeof value === "number" ? column.format(value) : value}
                                                 </TableCell>
                                             );

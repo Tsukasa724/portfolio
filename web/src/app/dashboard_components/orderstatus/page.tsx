@@ -99,7 +99,7 @@ export default function OrderStatusPage({ userRole }: OrderStatusPageProps) {
                                         {columns.map((column) => {
                                             const value = row[column.id];
                                             return (
-                                                <TableCell key={column.id} align={column.align}>
+                                                <TableCell key={column.id} align={column.align} sx={column.id === "status" ? (value === "受け取り完了" ? { color: "green", fontWeight: "bold" } : value === "発注中止" ? { color: "red", fontWeight: "bold" } : value === "発注中" ? { color: "blue", fontWeight: "bold" } : {}) : {}}>
                                                     {column.format && typeof value === "number" ? column.format(value) : value}
                                                 </TableCell>
                                             );

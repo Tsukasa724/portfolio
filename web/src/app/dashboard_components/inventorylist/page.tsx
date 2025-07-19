@@ -157,7 +157,7 @@ export default function InventoryListPage({ userRole }: InventoryListPageProps) 
                                         {columns.map((column) => {
                                             const value = row[column.id];
                                             return (
-                                                <TableCell key={column.id} align={column.align}>
+                                                <TableCell key={column.id} align={column.align} sx={column.id === "status" ? (value === "在庫不足" ? { color: "red", fontWeight: "bold" } : value === "在庫有り" ? { color: "green", fontWeight: "bold" } : {}) : {}}>
                                                     {column.format && typeof value === "number" ? column.format(value) : value}
                                                 </TableCell>
                                             );
