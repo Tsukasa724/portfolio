@@ -215,7 +215,7 @@ class Account(Base):
 | GET          | `/dashboard/read_order_status_list`    | 発注ステータスの一覧取得       |
 | GET          | `/dashboard/read_stock_list`           | 在庫使用・追加用リスト取得     |
 
-### 実際に使ってもらった指摘内容と修正内容
+## 実際に使ってもらった指摘内容と修正内容
 
 指摘内容
 
